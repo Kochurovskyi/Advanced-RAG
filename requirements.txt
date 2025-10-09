@@ -1,0 +1,18 @@
+# Core LangChain packages
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.0.20
+
+# Vector store and embeddings
+langchain-chroma>=0.1.0
+langchain-google-genai>=1.0.0
+
+# Data validation and utilities
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# Testing
+pytest>=7.0.0
+
+# Optional: For better text processing
+tiktoken>=0.5.0
