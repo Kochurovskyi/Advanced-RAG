@@ -219,13 +219,54 @@ Built-in logging provides insights into:
 - Generation quality and retry attempts
 - Performance metrics and timing
 
-## 🤝 Contributing
+### Example Log Output
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+**RAG Workflow (Vector Store Path):**
+```
+2025-10-09 16:00:33,938 - arag.graph - INFO - Routing question
+2025-10-09 16:00:34,861 - arag.graph - INFO - Route question to RAG (vectorstore)
+2025-10-09 16:00:35,598 - arag.graph - INFO - Route question to RAG (vectorstore)
+2025-10-09 16:00:35,599 - arag.graph.retrieve - INFO - Retrieving documents
+2025-10-09 16:00:36,136 - arag.graph.retrieve - INFO - Retrieved 3 documents
+2025-10-09 16:00:36,136 - arag.graph.grade_documents - INFO - Checking document relevance to question
+2025-10-09 16:00:38,139 - arag.graph.grade_documents - INFO - Graded 3 documents, 3 relevant
+2025-10-09 16:00:38,140 - arag.graph - INFO - Assessing graded documents
+2025-10-09 16:00:38,140 - arag.graph - INFO - Decision: Generate response
+2025-10-09 16:00:38,141 - arag.graph.generate - INFO - Generating response
+2025-10-09 16:00:39,067 - arag.graph.generate - INFO - Generated response length: 150 characters
+2025-10-09 16:00:39,067 - arag.graph - INFO - Checking hallucinations
+2025-10-09 16:00:39,907 - arag.graph - INFO - Generation is grounded in documents
+----------------------
+Question:  What is short term memory in agents?
+Source - RAG
+Short-term memory in agents is utilized for in-context learning. It is considered a way for the model to learn. This is related to prompt engineering.
+------------------------
+```
+
+**Web Search Workflow (Fallback Path):**
+```
+2025-10-09 16:00:39,909 - arag.graph - INFO - Routing question
+2025-10-09 16:00:40,668 - arag.graph - INFO - Route question to RAG (vectorstore)
+2025-10-09 16:00:41,287 - arag.graph - INFO - Route question to RAG (vectorstore)
+2025-10-09 16:00:41,288 - arag.graph.retrieve - INFO - Retrieving documents
+2025-10-09 16:00:41,625 - arag.graph.retrieve - INFO - Retrieved 3 documents
+2025-10-09 16:00:41,627 - arag.graph.grade_documents - INFO - Checking document relevance to question
+2025-10-09 16:00:43,916 - arag.graph.grade_documents - INFO - Graded 3 documents, 0 relevant
+2025-10-09 16:00:43,916 - arag.graph - INFO - Assessing graded documents
+2025-10-09 16:00:43,917 - arag.graph - INFO - Decision: Not all documents are relevant to question, include web search
+2025-10-09 16:00:43,917 - arag.graph.web_search - INFO - Performing web search
+2025-10-09 16:00:46,220 - arag.graph.web_search - INFO - Web search completed, found 3 results
+2025-10-09 16:00:46,221 - arag.graph.generate - INFO - Generating response
+2025-10-09 16:00:47,028 - arag.graph.generate - INFO - Generated response length: 376 characters
+2025-10-09 16:00:47,028 - arag.graph - INFO - Checking hallucinations
+2025-10-09 16:00:47,836 - arag.graph - INFO - Generation is grounded in documents
+----------------------
+Question:  What is super memory in agents?
+Source - Web
+Supermemory is a universal memory API for AI apps that builds a knowledge graph based on the data it processes and personalizes the context for the users. It is described as a universal AI memory layer that keeps projects, prompts, and context synced across every AI IDE and LLM. The core idea is to create a centralized memory store accessible by various AI Agent interfaces.
+------------------------
+```
+
 
 ## 📄 License
 
@@ -238,12 +279,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Tavily](https://tavily.com/) for web search capabilities
 - [Google Gemini](https://ai.google.dev/) for the language model
 
-## 📞 Support
-
-For questions, issues, or contributions, please:
-- Open an issue on GitHub
-- Check the documentation
-- Review the test cases for usage examples
 
 ---
 

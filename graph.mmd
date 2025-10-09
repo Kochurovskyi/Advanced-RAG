@@ -1,30 +1,25 @@
+---
+config:
+  flowchart:
+    curve: linear
+---
 graph TD;
-    Start([Start]):::startNode
-    RouteQuestion["Route Question"]:::processNode
-    RetrieveDocuments["Retrieve Documents"]:::processNode
-    GradeDocuments["Grade Documents"]:::processNode
-    AreDocumentsRelevant{{"Are documents relevant?"}}:::decisionNode
-    WebSearch["Web Search"]:::processNode
-    GenerateAnswer["Generate Answer"]:::processNode
-    IsGenerationGrounded{{"Is generation grounded?"}}:::decisionNode
-    RetryGeneration["Retry Generation"]:::retryNode
-    End([End]):::endNode
-
-    Start --> RouteQuestion;
-    RouteQuestion -->|"vectorstore"| RetrieveDocuments;
-    RouteQuestion -->|"websearch"| WebSearch;
-    RetrieveDocuments --> GradeDocuments;
-    GradeDocuments --> AreDocumentsRelevant;
-    AreDocumentsRelevant -->|"Has relevant docs"| GenerateAnswer;
-    AreDocumentsRelevant -->|"No relevant docs"| WebSearch;
-    WebSearch --> GenerateAnswer;
-    GenerateAnswer --> IsGenerationGrounded;
-    IsGenerationGrounded -->|"Grounded"| End;
-    IsGenerationGrounded -->|"Not grounded"| RetryGeneration;
-    RetryGeneration --> GenerateAnswer;
-
-    classDef startNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000,font-weight:bold;
-    classDef endNode fill:#f3e5f5,stroke:#4a148c,stroke-width:3px,color:#000,font-weight:bold;
-    classDef processNode fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#000;
-    classDef decisionNode fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#000;
-    classDef retryNode fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#000;
+	__start__([<p>__start__</p>]):::first
+	ROUTE(ROUTE)
+	retrieve(retrieve)
+	grade_documents(grade_documents)
+	generate(generate)
+	websearch(websearch)
+	__end__([<p>__end__</p>]):::last
+	ROUTE -.-> retrieve;
+	ROUTE -.-> websearch;
+	__start__ --> ROUTE;
+	generate -. &nbsp;useful&nbsp; .-> __end__;
+	grade_documents -.-> generate;
+	grade_documents -.-> websearch;
+	retrieve --> grade_documents;
+	websearch --> generate;
+	generate -. &nbsp;not supported&nbsp; .-> generate;
+	classDef default fill:#f2f0ff,line-height:1.2
+	classDef first fill-opacity:0
+	classDef last fill:#bfb6fc

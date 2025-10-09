@@ -153,17 +153,17 @@ workflow.add_conditional_edges(GENERATE, grade_generation_grounded_in_documents_
 workflow.add_edge(WEBSEARCH, GENERATE)
 app = workflow.compile()
 
-# Generate Mermaid diagram file using app.get_graph().draw_mermaid_
-mermaid_content = app.get_graph().draw_mermaid()
-with open("graph.mmd", "w") as f: f.write(mermaid_content)
-logger.info("Mermaid file created as graph.mmd - use https://mermaid.live/ to generate PNG")
-logger.info("Graph compiled successfully!")
 
 # Test the graph with a sample question
 if __name__ == "__main__":
     logger.info("="*50)
     logger.info("TESTING RAG GRAPH")
     logger.info("="*50)
+    # Generate Mermaid diagram file using app.get_graph().draw_mermaid_
+    mermaid_content = app.get_graph().draw_mermaid()
+    with open("graph.mmd", "w") as f: f.write(mermaid_content)
+    logger.info("Mermaid file created as graph.mmd - use https://mermaid.live/ to generate PNG")
+    logger.info("Graph compiled successfully!")
     # Test with a sample question
     test_question = "What is chain of thought prompting?"
     logger.info(f"Testing with question: {test_question}")
