@@ -82,7 +82,7 @@ def main() -> None:
     st.subheader("Answer")
     st.markdown(result.get("generation", "(no generation)"))
 
-    st.subheader("Routing")
+    # st.subheader("Routing")
     st.write(f"Source: **{_format_source(bool(result.get('web_search')))}**")
 
     if show_docs:
