@@ -1,16 +1,18 @@
 from dotenv import load_dotenv
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import WebBaseLoader
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import time
 import os
 
 load_dotenv()
 MODEL_NAME = "gemini-2.0-flash-lite"
-embd = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
-llm = ChatGoogleGenerativeAI(model=MODEL_NAME)
+_api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+if _api_key:
+    from langchain_google_genai import GoogleGenerativeAIEmbeddings
+
+    embd = GoogleGenerativeAIEmbeddings(model="models/embedding-001", api_key=_api_key)
+else:
+    embd = None
 
 # Set USER_AGENT to avoid detection
 os.environ["USER_AGENT"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -19,6 +21,14 @@ url = "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/"
 # -------------------------------------------- Retriever Creation --------------------------------
 def create_retriever():
     """Create and return a Chroma retriever."""
+    if embd is None:
+        # Allow the app to run without external API keys.
+        class _EmptyRetriever:
+            def invoke(self, _query):
+                return []
+
+        return _EmptyRetriever()
+
     return Chroma(
         collection_name="rag-chroma", 
         persist_directory="./.chroma", 
@@ -27,6 +37,12 @@ def create_retriever():
 
 def create_vectorstore_from_urls(urls, chunk_size=250, chunk_overlap=0):
     """Create vectorstore from URLs with retry logic."""
+    if embd is None:
+        raise RuntimeError(
+            "Missing Gemini API key for embeddings. Set GOOGLE_API_KEY or GEMINI_API_KEY "
+            "to build the vectorstore."
+        )
+
     max_retries = 3
     docs = None
     
@@ -46,6 +62,8 @@ def create_vectorstore_from_urls(urls, chunk_size=250, chunk_overlap=0):
                 raise e
     
     # Split documents
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+
     text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=chunk_size, 
         chunk_overlap=chunk_overlap

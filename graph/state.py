@@ -1,5 +1,5 @@
 from typing import List, TypedDict, Optional
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 
 class GraphState(TypedDict):

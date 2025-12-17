@@ -1,14 +1,24 @@
 from typing import Any, Dict
 import logging
+import os
 from dotenv import load_dotenv
-from langchain.schema import Document
-from langchain_tavily import TavilySearch
+from langchain_core.documents import Document
 from graph.state import GraphState
 from config import WEB_SEARCH_MAX_RESULTS
 
 load_dotenv()
-web_search_tool = TavilySearch(max_results=WEB_SEARCH_MAX_RESULTS)
 logger = logging.getLogger("arag.graph.web_search")
+
+def _build_web_search_tool():
+    api_key = os.getenv("TAVILY_API_KEY")
+    if not api_key:
+        return None
+    try:
+        from langchain_tavily import TavilySearch
+    except Exception:
+        return None
+    return TavilySearch(max_results=WEB_SEARCH_MAX_RESULTS, api_key=api_key)
+
 
 def web_search(state: GraphState) -> Dict[str, Any]:
     """
@@ -44,6 +54,11 @@ def web_search(state: GraphState) -> Dict[str, Any]:
     try:
         question = state["question"]
         documents = state.get("documents", None)
+
+        web_search_tool = _build_web_search_tool()
+        if web_search_tool is None:
+            logger.warning("Tavily not configured; skipping web search")
+            return {"documents": documents or [], "question": question, "web_search": True}
         
         tavily_results = web_search_tool.invoke({"query": question})["results"]
         joined_tavily_result = "\n".join([tavily_result["content"] for tavily_result in tavily_results])

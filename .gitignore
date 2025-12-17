@@ -149,3 +149,6 @@ app.log
 main-simple.zip
 ARAG_v1.ZIP
 .gitignore
+
+# Local vector DB
+.chroma/
