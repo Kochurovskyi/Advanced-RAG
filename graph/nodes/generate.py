@@ -44,8 +44,10 @@ def generate(state: GraphState) -> Dict[str, Any]:
         - Preserves original documents and question in output
     """
     logger.info("Generating response")   
-    question = state["question"]
-    documents = state["documents"]
+    # Track tries to prevent infinite generate -> grade -> generate loops.
+    tries = int(state.get("tries", 0) or 0) + 1
+    question = state.get("question", "")
+    documents = state.get("documents", []) or []
     try:
         generation = generation_chain.invoke({"context": documents, "question": question})
         logger.info(f"Generated response length: {len(generation)} characters")
@@ -53,7 +55,7 @@ def generate(state: GraphState) -> Dict[str, Any]:
         logger.error(f"Generation chain failed: {str(e)}")
         raise RuntimeError(f"Generation chain failed: {str(e)}")
     web_search = state.get("web_search", False)
-    return {"documents": documents, "question": question, "generation": generation, "web_search": web_search}
+    return {"documents": documents, "question": question, "generation": generation, "web_search": web_search, "tries": tries}
 
 
 if __name__ == "__main__":

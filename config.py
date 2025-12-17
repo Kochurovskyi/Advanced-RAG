@@ -21,6 +21,9 @@ LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 GRAPH_ENTRY_POINT = "ROUTE"
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 
+# If true, bypass RAG + web search and answer directly with the LLM.
+DIRECT_LLM_ONLY = os.getenv("DIRECT_LLM_ONLY", "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
 # Constants
 RETRIEVE = "retrieve"
 GRADE_DOCUMENTS = "grade_documents"

@@ -9,6 +9,7 @@ from graph.const import GENERATE, GRADE_DOCUMENTS, RETRIEVE, WEBSEARCH
 from graph.nodes import generate, retrieve, web_search, grade_documents
 from graph.state import GraphState
 from graph.logging_config import logger
+from config import DIRECT_LLM_ONLY, MAX_RETRIES
 
 load_dotenv()
 
@@ -49,12 +50,30 @@ def grade_generation_grounded_in_documents_and_question(state: GraphState) -> st
     """
     logger.info("Checking hallucinations")
     try:
+        # Direct LLM mode: no grounding checks, just return the answer.
+        if DIRECT_LLM_ONLY:
+            return "useful"
+
+        # If we used web search, don't loop on graders—just return the best effort.
+        if state.get("web_search", False):
+            return "useful"
+
+        # Safety valve: never loop forever.
+        tries = int(state.get("tries", 0) or 0)
+        if tries >= MAX_RETRIES:
+            logger.warning(f"Max retries reached ({MAX_RETRIES}); returning best effort")
+            return "useful"
+
         documents = state.get("documents", [])
         generation = state.get("generation", "")
         
-        if not documents or not generation:
-            logger.warning("Missing documents or generation")
+        if not generation:
+            logger.warning("Missing generation")
             return "not supported"
+        if not documents:
+            # No docs to grade against: return best effort instead of looping.
+            logger.warning("No documents to grade against; returning best effort")
+            return "useful"
             
         score = hallucination_grader.invoke({"documents": documents, "generation": generation})
         if score.binary_score:
@@ -107,6 +126,9 @@ def route_question_conditional(state: GraphState) -> str:
     This function determines the next node based on the routing decision.
     """
     logger.info("Routing question (conditional)")
+    if DIRECT_LLM_ONLY:
+        logger.info("DIRECT_LLM_ONLY enabled: routing to GENERATE")
+        return GENERATE
     question = state.get("question", "")
     
     if not question:
@@ -142,7 +164,8 @@ workflow.add_conditional_edges(
     route_question_conditional,
     {
         RETRIEVE: RETRIEVE,
-        WEBSEARCH: WEBSEARCH
+        WEBSEARCH: WEBSEARCH,
+        GENERATE: GENERATE,
     }
 )
 
