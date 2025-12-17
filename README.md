@@ -105,6 +105,55 @@ The Streamlit UI calls the same LangGraph `app` as `main.py`, and shows:
 - whether the graph used **RAG** or **web search** (`web_search` flag)
 - optionally, the retrieved `documents` and full raw state for debugging
 
+## 🐳 Docker (local)
+
+Build and run the container locally:
+
+```bash
+docker build -t arag-streamlit:local .
+docker run --rm -p 8501:8501 arag-streamlit:local
+```
+
+Open `http://localhost:8501`.
+
+## ☁️ AWS Elastic Beanstalk (Docker image from Docker Hub)
+
+### Push image to Docker Hub
+
+```bash
+docker tag arag-streamlit:local kochurovskyi/arag-streamlit:latest
+docker push kochurovskyi/arag-streamlit:latest
+```
+
+### Deploy from AWS Console (no AWS CLI required)
+
+1. **Elastic Beanstalk → Create application**
+   - Environment: **Web server environment**
+   - Platform: **Docker**
+2. Upload an application zip that contains **only** `Dockerrun.aws.json` at the root:
+
+```json
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": { "Name": "kochurovskyi/arag-streamlit:latest", "Update": "true" },
+  "Ports": [{ "ContainerPort": "8501" }]
+}
+```
+
+3. After the environment is green, open the EB URL (example):
+   `http://arag-streamlit.eu-central-1.elasticbeanstalk.com/`
+
+### Required environment variables (Elastic Beanstalk)
+
+Elastic Beanstalk → Environment → **Configuration → Software → Environment properties**:
+
+- `GOOGLE_API_KEY` (or `GEMINI_API_KEY`)
+- `TAVILY_API_KEY` (optional, only if you want web search)
+
+Optional:
+- `DIRECT_LLM_ONLY=1` (force plain LLM, skip RAG + web)
+- `MAX_RETRIES=3`
+
 ### Running Tests
 
 ```bash

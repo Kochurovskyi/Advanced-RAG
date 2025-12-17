@@ -1,0 +1,32 @@
+.git
+.gitignore
+.venv
+.venv/
+venv
+venv/
+__pycache__
+__pycache__/
+*.pyc
+.pytest_cache
+.pytest_cache/
+.mypy_cache
+.mypy_cache/
+.idea
+.idea/
+.vscode
+.vscode/
+
+# Local vector DB
+# (Included in image so the container has the knowledge base)
+# .chroma
+# .chroma/
+
+# Big local folder in this repo
+other
+other/
+
+# Large/irrelevant artifacts
+*.png
+*.zip
+*.ZIP
+pytest-cache-files-*
