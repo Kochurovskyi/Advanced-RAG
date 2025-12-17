@@ -44,7 +44,7 @@ def main() -> None:
     with st.sidebar:
         st.markdown("### Configuration")
         st.write(f"GOOGLE_API_KEY set: `{_env_flag('GOOGLE_API_KEY') or _env_flag('GEMINI_API_KEY')}`")
-        st.write(f"TAVILY_API_KEY set: `{_env_flag('TAVILY_API_KEY')}`")
+        # st.write(f"TAVILY_API_KEY set: `{_env_flag('TAVILY_API_KEY')}`")
 
         st.markdown("### Examples")
         examples = [
