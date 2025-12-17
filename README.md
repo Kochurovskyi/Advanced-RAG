@@ -4,6 +4,8 @@ A sophisticated LangGraph-based RAG system that intelligently routes questions b
 
 ![Advanced RAG Workflow](graph.png)
 
+![Streamlit App](screenshot_streamlit.png)
+
 ## 🚀 Features
 
 - **Intelligent Question Routing**: Automatically determines whether to use vector store (RAG) or web search based on question content
@@ -92,6 +94,17 @@ print(result["generation"])
 python main.py
 ```
 
+### Running the Streamlit App
+
+```bash
+streamlit run app.py
+```
+
+The Streamlit UI calls the same LangGraph `app` as `main.py`, and shows:
+- the final answer (`generation`)
+- whether the graph used **RAG** or **web search** (`web_search` flag)
+- optionally, the retrieved `documents` and full raw state for debugging
+
 ### Running Tests
 
 ```bash
@@ -107,6 +120,7 @@ pytest tests/test_integration.py -v
 
 ```
 Advanced-RAG/
+├── app.py                    # Streamlit UI (calls graph.graph:app)
 ├── graph/
 │   ├── __init__.py
 │   ├── graph.py              # Main LangGraph workflow definition
@@ -135,6 +149,7 @@ Advanced-RAG/
 ├── .env.example             # Environment variables template
 ├── graph.mmd                # Mermaid diagram source
 ├── graph.png                # Workflow visualization
+├── screenshot_streamlit.png  # Streamlit UI screenshot
 └── README.md                # This file
 ```
 

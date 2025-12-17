@@ -22,3 +22,6 @@ pytest>=7.0.0
 
 # Optional: For better text processing
 tiktoken>=0.5.0
+
+# UI
+streamlit>=1.40.0

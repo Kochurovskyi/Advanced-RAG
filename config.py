@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Model Configuration
-MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash-lite")
+MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.5-flash-lite")
 MODEL_TEMPERATURE = float(os.getenv("MODEL_TEMPERATURE", "0"))
 
 # Web Search Configuration
